@@ -1,8 +1,11 @@
-use std::io::Read;
-use std::ops::{BitXor, Shl};
+mod base;
+
+use std::io::{stdout, Write};
 use std::time::Instant;
 use std::{error::Error, io};
 use tokio::net::UdpSocket;
+
+use base::Packet;
 
 struct Server {
     socket: UdpSocket,
@@ -13,15 +16,19 @@ impl Server {
     async fn run(self) -> Result<(), io::Error> {
         let Server { socket, mut buf } = self;
         let now = Instant::now();
+        let mut stdout = stdout();
 
         loop {
-            socket.recv(&mut buf).await?;
+            let (size, _) = socket.recv_from(&mut buf).await?;
+            let packet = Packet::new(&buf[..size]);
 
-            println!(
-                "Received data: {:?} - {} nanoseconds after server start",
-                buf,
-                now.elapsed().as_nanos()
-            );
+            if !packet.is_race_on {
+                continue;
+            }
+
+            print!("\r{:?}", packet.dash.gear);
+
+            stdout.flush().unwrap();
         }
     }
 }
