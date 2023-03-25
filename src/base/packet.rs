@@ -20,10 +20,10 @@ pub struct Packet {
      * 
      */
     pub drive_train: u8,        // Between 100 (slowest car) and 999 (fastest car) inclusive
-    pub cylinders: u8,          // Number of cylinders in the engine
-    pub performance_index: u8,  // Between 100 (slowest car) and 999 (fastest car) inclusive
-    pub class: u8,              // Between 0 (D -- worst cars) and 7 (X class -- best cars) inclusive
-    pub ordinal: u8,             // Unique ID of the car make/model
+    pub engine_cylinders: u8,          // Number of cylinders in the engine
+    pub car_performance_index: u8,  // Between 100 (slowest car) and 999 (fastest car) inclusive
+    pub car_class: u8,              // Between 0 (D -- worst cars) and 7 (X class -- best cars) inclusive
+    pub car_ordinal: u8,             // Unique ID of the car make/model
 
     /**
      * 
@@ -186,10 +186,10 @@ pub struct Packet {
      * 
      * 
      */
-    pub number: u16,
-    pub best: f32,
-    pub last: f32,
-    pub current: f32,
+    pub lap_number: u16,
+    pub best_lap_time: f32,
+    pub last_lap_time: f32,
+    pub current_lap_time: f32,
     pub current_race_time: f32,
     pub race_position: u8,
 
@@ -212,11 +212,11 @@ impl Packet {
             is_race_on:         bytes::read_bool(data, 0),
             timestamp_ms:       bytes::read_u32(data, 4),
 
-            ordinal:            bytes::read_u8(data, 212),
-            class:              bytes::read_u8(data, 216),
-            performance_index:  bytes::read_u8(data, 220),
-            drive_train:        bytes::read_u8(data, 224),
-            cylinders:          bytes::read_u8(data, 228),
+            car_ordinal:                bytes::read_u8(data, 212),
+            car_class:                  bytes::read_u8(data, 216),
+            car_performance_index:      bytes::read_u8(data, 220),
+            drive_train:                bytes::read_u8(data, 224),
+            engine_cylinders:           bytes::read_u8(data, 228),
 
             engine_max_rpm:     bytes::read_f32(data, 8),
             engine_idle_rpm:    bytes::read_f32(data, 12),
@@ -309,12 +309,12 @@ impl Packet {
             normalized_driving_line:        bytes::read_u8(data, 309),
             normalized_ai_brake_difference: bytes::read_u8(data, 310),
 
-            number:             bytes::read_u16(data, 300),
-            best:               bytes::read_f32(data, 284),
-            last:               bytes::read_f32(data, 288),
-            current:            bytes::read_f32(data, 292),
-            current_race_time:  bytes::read_f32(data, 296),
-            race_position:      bytes::read_u8(data, 302)
+            lap_number:                 bytes::read_u16(data, 300),
+            best_lap_time:              bytes::read_f32(data, 284),
+            last_lap_time:              bytes::read_f32(data, 288),
+            current_lap_time:           bytes::read_f32(data, 292),
+            current_race_time:          bytes::read_f32(data, 296),
+            race_position:              bytes::read_u8(data, 302)
         }
     }
 }
