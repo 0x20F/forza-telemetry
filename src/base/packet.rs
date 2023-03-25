@@ -1,9 +1,12 @@
 use super::bytes;
-use serde::Serialize;
+use serde::{ Serialize };
 
 
 #[derive(Serialize, Default, Debug)]
 pub struct Packet {
+    // Injected by me
+    pub received_at_ns: u128,
+
     // ----------------------- SLED
     // --------------------------------
     pub is_race_on: bool,           // = 1 when race is on, = 0 when in menus/race stopped
@@ -202,8 +205,10 @@ pub struct Packet {
 }
 
 impl Packet {
-    pub fn new(data: &[u8]) -> Packet {
+    pub fn new(data: &[u8], received_at_ns: u128) -> Packet {
         Packet {
+            received_at_ns,
+
             is_race_on:         bytes::read_bool(data, 0),
             timestamp_ms:       bytes::read_u32(data, 4),
 
