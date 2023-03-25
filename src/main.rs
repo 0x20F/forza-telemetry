@@ -15,20 +15,24 @@ struct Server {
 impl Server {
     async fn run(self) -> Result<(), io::Error> {
         let Server { socket, mut buf } = self;
+        let mut writer = csv::Writer::from_writer(io::stdout());
+
         let now = Instant::now();
         let mut stdout = stdout();
 
         loop {
             let (size, _) = socket.recv_from(&mut buf).await?;
+
+            // For about 16 minutes of gameplay, we'll have 60k of these.
+            // That assumes running at 60fps, with 1 packet per frame.
             let packet = Packet::new(&buf[..size]);
 
             if !packet.is_race_on {
                 continue;
             }
 
-            print!("\r{:?}", packet.dash.gear);
-
-            stdout.flush().unwrap();
+            writer.serialize(packet)?;
+            writer.flush()?;
         }
     }
 }
