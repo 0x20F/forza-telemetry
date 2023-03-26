@@ -4,6 +4,7 @@ use std::io::{stdout, Write};
 use std::time::Instant;
 use std::{error::Error, io};
 use clap::Parser;
+use paris::log;
 use tokio::net::UdpSocket;
 
 use base::Packet;
@@ -34,20 +35,21 @@ impl<'a> Server<'a> {
         let mut stdout = stdout();
         let mut count = 0;
 
-        println!("Listening on: {}", socket.local_addr()?);
+        log!("[<cyan>+</>] Listening on: <bright_green>{}</>", socket.local_addr()?);
+        log!("[<cyan>+</>] Outputting to: <bright_green>{}</>", out_file);
 
         loop {
             let ( size, _ ) = tokio::select! {
                 res = socket.recv_from(&mut buf) => res?,
                 _ = shutdown_receiver.recv() => {
-                    println!("Received shutdown request...");
+                    log!("[<yellow>~</>] Received shutdown request...");
 
                     // On receive, we want to save what we got, and get out
                     // of the function
-                    println!("   Saving any unsaved data to {}", out_file);
+                    log!("   [<bright_red>*</>] Saving any unsaved data to {}", out_file);
                     writer.flush()?;
 
-                    println!("   Exiting.");
+                    log!("   [<bright_red>*</>] Exiting.");
                     return Ok(())
                 }
             };

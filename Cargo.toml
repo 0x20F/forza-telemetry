@@ -9,4 +9,5 @@ edition = "2021"
 tokio = { version = "1.26.0", features = ["full"] }
 serde = { version = "1.0.158", features = ["derive"] }
 csv = "1.2"
+paris = { version = "1.5", features = ["macros"] }
 clap = { version = "4.1.13", features = ["derive"] }
