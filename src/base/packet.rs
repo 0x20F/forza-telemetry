@@ -172,7 +172,7 @@ pub struct Packet {
     pub fuel: f32,
     pub distance_traveled: f32,
 
-    pub acceleration: u8,
+    pub throttle: u8,
     pub brake: u8,
     pub clutch: u8,
     pub handbrake: u8,
@@ -300,7 +300,7 @@ impl Packet {
             fuel:               bytes::read_f32(data, 276),
             distance_traveled:  bytes::read_f32(data, 280),
 
-            acceleration:       bytes::read_u8(data, 303),
+            throttle:       bytes::read_u8(data, 303),
             brake:              bytes::read_u8(data, 304),
             clutch:             bytes::read_u8(data, 305),
             handbrake:          bytes::read_u8(data, 306),
