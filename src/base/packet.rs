@@ -1,8 +1,8 @@
 use super::bytes;
-use serde::{ Serialize };
+use serde::Serialize;
 
 
-#[derive(Serialize, Default, Debug)]
+#[derive(Serialize, Default, Debug, Clone, Copy)]
 pub struct Packet {
     // Injected by me
     pub received_at_ns: u128,

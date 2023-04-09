@@ -16,8 +16,10 @@ pub struct Server {
 }
 
 impl Server {
-    pub fn new(socket: UdpSocket, args: Args) -> Result<Server, io::Error> {
+    pub async fn new(socket: UdpSocket, args: Args) -> Result<Server, io::Error> {
         let mut writer = None;
+
+        println!("\n\nTelemetry ]---------------------------------------------\n");
 
         if args.csv.is_some() {
             let file = args.csv.unwrap();
