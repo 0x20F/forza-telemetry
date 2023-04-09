@@ -12,9 +12,28 @@ use server::Server;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
-struct Args {
-    #[arg(short, long, default_value = "output.csv")]
-    filename: String
+pub struct Args {
+    /// The name and path of the csv file to dump data into
+    #[arg(short, long)]
+    csv: Option<String>,
+
+    /// The host of the influxdb host to dump data into
+    #[arg(short, long, group = "influx")]
+    influx_host: Option<String>,
+
+    /// The user needed to log into the influxdb database
+    #[arg(long, default_value = "", requires = "influx")]
+    influx_user: String,
+
+    /// The password needed to log into the influxdb database
+    #[arg(long, default_value = "", requires = "influx")]
+    influx_pass: String,
+
+    /// How many samples should be kept in the databse at all times.
+    /// The server automatically removes older samples if the total
+    /// exceeds this number.
+    #[arg(long, default_value_t = 1000, requires = "influx")]
+    influx_count: u32
 }
 
 
@@ -32,14 +51,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let socket = UdpSocket::bind(&addr).await?;
     
     let clone_tx = done_tx.clone();
+    let mut server = Server::new(socket, args)?;
 
     tokio::spawn(async move {
-        let server = Server {
-            socket,
-            buf: vec![0; 1024],
-            out_file: &args.filename
-        };
-
         server
             .run(
                 stop_rx, 
