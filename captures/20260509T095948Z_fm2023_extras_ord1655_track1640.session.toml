@@ -1,0 +1,28 @@
+schema_version = 2
+csv = "20260509T095948Z_fm2023_extras_ord1655_track1640.csv"
+source = "fm2023_extras"
+car_ordinal = 1655
+track_id = 1640
+session_started = "2026-05-09T09:59:48Z"
+frames_written = 20848
+
+[calibration]
+mass = 1255.0
+cog_height = 0.46
+wheelbase = 2.57
+track_f = 1.52
+track_r = 1.54
+wheel_radius_f = 0.313
+wheel_radius_r = 0.313
+front_weight_bias = 0.55
+spring_rate_f = 34320.0
+spring_rate_r = 41190.0
+steering_ratio = 13.1
+ackermann_ratio = 0.5
+pressure_f = 241.0
+pressure_r = 241.0
+sidewall_height_f = 0.097
+sidewall_height_r = 0.097
+
+[learned]
+wheel_radius_f = 0.313397

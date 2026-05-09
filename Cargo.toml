@@ -1,13 +1,26 @@
 [package]
 name = "forza-telemetry"
-version = "0.1.0"
-edition = "2021"
+version = "0.2.0"
+edition = "2024"
+description = "Decode, enrich, and record Forza Motorsport / Horizon UDP telemetry to a v2 CSV schema."
+rust-version = "1.85"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "forza_telemetry"
+path = "src/lib.rs"
+
+[[bin]]
+name = "forza-telemetry"
+path = "src/bin/record.rs"
 
 [dependencies]
-tokio = { version = "1.26.0", features = ["full"] }
-serde = { version = "1.0.158", features = ["derive"] }
-csv = "1.2"
-paris = { version = "1.5", features = ["macros"] }
-clap = { version = "4.1.13", features = ["derive"] }
+tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal", "sync", "time"] }
+serde = { version = "1", features = ["derive"] }
+csv = "1"
+clap = { version = "4", features = ["derive"] }
+toml = "1"
+thiserror = "2"
+chrono = { version = "0.4", default-features = false, features = ["serde", "clock", "std"] }
+
+[dev-dependencies]
+tempfile = "3"

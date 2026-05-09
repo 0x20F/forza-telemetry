@@ -1,0 +1,59 @@
+# Bundled default vehicle calibrations keyed by Forza CarOrdinal.
+#
+# These values are placeholders intended to make integration tests and the
+# first-time recording experience non-empty. Real numbers should be added
+# per car in a user-provided TOML passed via `forza-telemetry record
+# --cars cars.toml`. User entries override anything here.
+#
+# Units (SI throughout):
+#   mass               kg
+#   cog_height         m
+#   wheelbase          m
+#   track_f / track_r  m
+#   wheel_radius_*     m
+#   spring_rate_*      N/m
+#   pressure_*         kPa
+#   sidewall_height_*  m
+#   front_weight_bias  fraction in [0, 1]
+#   steering_ratio     rad/rad (rack -> steering wheel)
+#   ackermann_ratio    fraction in [0, 1]
+
+[[car]]
+ordinal = 2735
+name = "Generic FR Coupe (placeholder)"
+mass = 1500.0
+cog_height = 0.55
+wheelbase = 2.70
+track_f = 1.55
+track_r = 1.55
+wheel_radius_f = 0.34
+wheel_radius_r = 0.34
+front_weight_bias = 0.52
+spring_rate_f = 32000.0
+spring_rate_r = 28000.0
+steering_ratio = 15.0
+ackermann_ratio = 0.4
+pressure_f = 220.0
+pressure_r = 220.0
+sidewall_height_f = 0.10
+sidewall_height_r = 0.10
+
+[[car]]
+ordinal = 3000
+name = "Generic AWD Hatch (placeholder)"
+mass = 1450.0
+cog_height = 0.52
+wheelbase = 2.65
+track_f = 1.52
+track_r = 1.52
+wheel_radius_f = 0.32
+wheel_radius_r = 0.32
+front_weight_bias = 0.58
+spring_rate_f = 35000.0
+spring_rate_r = 30000.0
+steering_ratio = 14.5
+ackermann_ratio = 0.5
+pressure_f = 230.0
+pressure_r = 230.0
+sidewall_height_f = 0.095
+sidewall_height_r = 0.095

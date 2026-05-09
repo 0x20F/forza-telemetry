@@ -1,0 +1,67 @@
+# Per-car calibration overrides for `forza-telemetry record --cars cars.toml`.
+#
+# User entries override the bundled defaults field-by-field. Units match the
+# crate's `CarCalibration` (SI throughout):
+#   mass               kg
+#   cog_height         m
+#   wheelbase          m
+#   track_f / track_r  m
+#   wheel_radius_*     m
+#   spring_rate_*      N/m
+#   pressure_*         kPa
+#   sidewall_height_*  m
+#   front_weight_bias  fraction in [0, 1]
+#   steering_ratio     rad/rad (rack -> steering wheel)
+#   ackermann_ratio    fraction in [0, 1]
+
+# -----------------------------------------------------------------------------
+# 2013 Subaru BRZ (ZC6)
+#
+# Sources:
+#   - Curb weight, wheelbase, track widths, COG height: Subaru media kit
+#     (2013 BRZ full specs PDF; subaru.ca/subaru.com).
+#       curb weight (manual) = 2,762 lbs = 1255 kg
+#       wheelbase            = 101.2 in  = 2.570 m
+#       track front          =  59.8 in  = 1.520 m
+#       track rear           =  60.6 in  = 1.540 m
+#       COG height           = 18.1 in   = 0.460 m  (Subaru-claimed)
+#   - Stock spring rates: subaru-specs.com OEM data
+#       front 3.5 kg/mm  -> 3.5 * 9.80665 = 34.32 N/mm = 34320 N/m
+#       rear  4.2 kg/mm  -> 4.2 * 9.80665 = 41.19 N/mm = 41190 N/m
+#       (rear factory range is 4.0-4.5 kg/mm; 4.2 picked as midpoint)
+#   - Steering ratio: 13.1:1 stock rack ratio.
+#   - Tire size: 215/45R17 stock all four corners.
+#       sidewall height = 215 * 0.45    = 96.75 mm  = 0.097 m
+#       loaded radius   = 17"/2 + 96.75 = 215.9 + 96.75 = 312.65 mm
+#                                       = 0.313 m
+#   - Tire pressure: factory placard 35 psi front and rear (~241 kPa).
+#   - Front weight bias: Forza's myforzagarage entry models the BRZ as
+#     55F/45R, while Subaru's marketing claims 53/47. We use 0.55 because
+#     the normal-load reconstruction must match what the simulator is
+#     pushing through the packet, not the production spec sheet.
+#   - Ackermann ratio: not publicly published; 0.5 is a reasonable sports-
+#     car estimate. Replace once measured.
+#   - CarOrdinal 1655 is confirmed in the FH4 car-id list. Turn 10 / PG
+#     generally reuse ordinals across Forza titles, but the safest check
+#     is to load the BRZ in your specific game and read `car_ordinal`
+#     from the first packet `forza-telemetry record` writes; if it
+#     differs, copy this block under that ordinal too.
+[[car]]
+ordinal = 1655
+name = "2013 Subaru BRZ"
+mass = 1255.0
+cog_height = 0.460
+wheelbase = 2.570
+track_f = 1.520
+track_r = 1.540
+wheel_radius_f = 0.313
+wheel_radius_r = 0.313
+front_weight_bias = 0.55
+spring_rate_f = 34320.0
+spring_rate_r = 41190.0
+steering_ratio = 13.1
+ackermann_ratio = 0.5
+pressure_f = 241.0
+pressure_r = 241.0
+sidewall_height_f = 0.097
+sidewall_height_r = 0.097

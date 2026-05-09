@@ -1,0 +1,69 @@
+{
+  "calibration": {
+    "ackermann_ratio": 0.5,
+    "center_of_gravity_height": 0.46,
+    "front_weight_bias": 0.55,
+    "mass": 1255.0,
+    "max_lateral_g": 1.2,
+    "max_tire_squash": 0.09,
+    "pressure_f": 35.0,
+    "pressure_r": 35.0,
+    "reference_pressure": 32.0,
+    "sidewall_height_f": 0.097,
+    "sidewall_height_r": 0.097,
+    "spring_rate_f": 34320.0,
+    "spring_rate_r": 41190.0,
+    "squash_strength": 1.0,
+    "steering_ratio": 0.6108652381980153,
+    "tire_stiffness": 1.0,
+    "track_f": 1.52,
+    "track_r": 1.54,
+    "wheel_radius_f": 0.31677103,
+    "wheel_radius_r": 0.313,
+    "wheelbase": 2.57
+  },
+  "chassis": {
+    "body_pitch": 0.010124043,
+    "body_roll": 0.031865984,
+    "lateral_acceleration": 7.366995,
+    "longitudinal_acceleration": 5.859661,
+    "slip_angle": -0.99945337,
+    "speed": 32.974827,
+    "steering_amount": -1.0
+  },
+  "corners": {
+    "FL": {
+      "normal_load": 1921.5142,
+      "slip_angle": 2.6390522,
+      "slip_ratio": -0.080317974,
+      "suspension_travel": 0.001639083,
+      "tire_temperature": 127.63265,
+      "wheel_angular_velocity": 99.02119
+    },
+    "FR": {
+      "normal_load": 3402.4106,
+      "slip_angle": 4.421026,
+      "slip_ratio": -0.1357464,
+      "suspension_travel": -0.0059554502,
+      "tire_temperature": 127.41364,
+      "wheel_angular_velocity": 87.59859
+    },
+    "RL": {
+      "normal_load": 2893.7568,
+      "slip_angle": 10.377953,
+      "slip_ratio": 9.1950445,
+      "suspension_travel": 0.008792646,
+      "tire_temperature": 147.78665,
+      "wheel_angular_velocity": 125.36959
+    },
+    "RR": {
+      "normal_load": 4089.664,
+      "slip_angle": 9.9602585,
+      "slip_ratio": 10.184255,
+      "suspension_travel": 0.0003413558,
+      "tire_temperature": 147.78665,
+      "wheel_angular_velocity": 128.52498
+    }
+  },
+  "schema_version": 1
+}
