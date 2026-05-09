@@ -10,16 +10,18 @@
 //!
 //! F_front = m_front * g - delta_long
 //! F_rear  = m_rear  * g + delta_long
-//! F_fl    = F_front/2 - delta_lat_f/2
-//! F_fr    = F_front/2 + delta_lat_f/2
-//! F_rl    = F_rear /2 - delta_lat_r/2
-//! F_rr    = F_rear /2 + delta_lat_r/2
+//! F_fl    = F_front/2 + delta_lat_f/2
+//! F_fr    = F_front/2 - delta_lat_f/2
+//! F_rl    = F_rear /2 + delta_lat_r/2
+//! F_rr    = F_rear /2 - delta_lat_r/2
 //! ```
 //!
-//! The model assumes Forza's car-local frame (X right, Y up, Z forward),
-//! so a positive `a_lat` shifts load to the right and a positive `a_long`
-//! (forward acceleration) shifts load rearward. Sums are exactly `m * g`
-//! by construction.
+//! The model assumes Forza's car-local frame (X right, Y up, Z forward).
+//! A positive `a_lat` is body-frame centripetal acceleration to the right
+//! (i.e. a right-hand turn); the body's inertia tilts it left, so load
+//! shifts to the LEFT-side wheels (the outside of the turn). A positive
+//! `a_long` (forward acceleration) shifts load rearward. Sums are exactly
+//! `m * g` by construction.
 //!
 //! Returns `None` when any of `mass`, `cog_height`, `wheelbase`,
 //! `front_weight_bias`, `track_f`, `track_r` is missing from the
@@ -53,10 +55,10 @@ pub fn estimate(a_lat: f32, a_long: f32, calib: &CarCalibration) -> Option<Wheel
     let f_rear = m_rear * g + delta_long;
 
     Some(Wheel {
-        fl: f_front * 0.5 - delta_lat_f * 0.5,
-        fr: f_front * 0.5 + delta_lat_f * 0.5,
-        rl: f_rear * 0.5 - delta_lat_r * 0.5,
-        rr: f_rear * 0.5 + delta_lat_r * 0.5,
+        fl: f_front * 0.5 + delta_lat_f * 0.5,
+        fr: f_front * 0.5 - delta_lat_f * 0.5,
+        rl: f_rear * 0.5 + delta_lat_r * 0.5,
+        rr: f_rear * 0.5 - delta_lat_r * 0.5,
     })
 }
 
@@ -120,15 +122,17 @@ mod tests {
     }
 
     #[test]
-    fn lateral_acceleration_shifts_load_to_positive_x_side() {
+    fn positive_lateral_acceleration_shifts_load_left() {
+        // Body-frame `a_lat = +X` is centripetal to the right (a right-hand
+        // turn). The chassis tilts left, so left-side wheels gain load.
         let c = calib();
         let w0 = estimate(0.0, 0.0, &c).unwrap();
-        let w = estimate(5.0, 0.0, &c).unwrap(); // accel +X (right)
+        let w = estimate(5.0, 0.0, &c).unwrap();
         let mg = 1000.0 * GRAVITY_M_S2;
         assert!((sum(w) - mg).abs() < 1e-2);
-        assert!(w.fr > w0.fr);
-        assert!(w.rr > w0.rr);
-        assert!(w.fl < w0.fl);
-        assert!(w.rl < w0.rl);
+        assert!(w.fl > w0.fl);
+        assert!(w.rl > w0.rl);
+        assert!(w.fr < w0.fr);
+        assert!(w.rr < w0.rr);
     }
 }

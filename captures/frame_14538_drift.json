@@ -33,7 +33,7 @@
   },
   "corners": {
     "FL": {
-      "normal_load": 1921.5142,
+      "normal_load": 3402.4106,
       "slip_angle": 2.6390522,
       "slip_ratio": -0.080317974,
       "suspension_travel": 0.001639083,
@@ -41,7 +41,7 @@
       "wheel_angular_velocity": 99.02119
     },
     "FR": {
-      "normal_load": 3402.4106,
+      "normal_load": 1921.5142,
       "slip_angle": 4.421026,
       "slip_ratio": -0.1357464,
       "suspension_travel": -0.0059554502,
@@ -49,7 +49,7 @@
       "wheel_angular_velocity": 87.59859
     },
     "RL": {
-      "normal_load": 2893.7568,
+      "normal_load": 4089.664,
       "slip_angle": 10.377953,
       "slip_ratio": 9.1950445,
       "suspension_travel": 0.008792646,
@@ -57,7 +57,7 @@
       "wheel_angular_velocity": 125.36959
     },
     "RR": {
-      "normal_load": 4089.664,
+      "normal_load": 2893.7568,
       "slip_angle": 9.9602585,
       "slip_ratio": 10.184255,
       "suspension_travel": 0.0003413558,
