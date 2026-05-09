@@ -1,12 +1,27 @@
 //! Body slip angle: the angle between the car's heading and its velocity
 //! vector, in the horizontal plane.
 //!
-//! Forza's local frame is X-right, Y-up, Z-forward, so the heading axis is
-//! `+Z` and the slip is `atan2(vx, vz)`. Positive values mean the velocity
-//! points to the driver's right relative to the heading (rear-of-car is
-//! sliding left, classic oversteer attitude). At very low speed the angle
-//! is meaningless, so we return `None` until the car is moving at least
-//! 1 m/s in the horizontal plane.
+//! Forza's local frame is `X = right`, `Y = up`, `Z = forward`, so the
+//! heading axis is `+Z` and the slip is
+//!
+//! \[
+//! \beta = \mathrm{atan2}(v_x, v_z)
+//! \]
+//!
+//! gated below `1 m/s` of horizontal speed:
+//!
+//! \[
+//! \beta = \varnothing
+//! \iff v_x^{2} + v_z^{2} < (1\,\mathrm{m/s})^{2}
+//! \]
+//!
+//! Positive `beta` means the velocity points to the driver's right
+//! relative to the heading (rear-of-car is sliding left, classic
+//! right-hand-turn oversteer attitude). At very low speed both
+//! components approach zero and `atan2` becomes meaningless, so we
+//! return `None` and let CSV consumers see an empty cell.
+//!
+//! See `docs/math.md#body-slip-angle` for the full derivation.
 
 const SPEED_GATE_M_S: f32 = 1.0;
 

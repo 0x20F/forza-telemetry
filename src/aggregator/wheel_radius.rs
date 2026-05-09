@@ -1,17 +1,35 @@
-//! Auto-calibrate effective wheel radius by observing free-rolling wheels
-//! during coast.
+//! Auto-calibrate effective wheel radius by observing free-rolling
+//! wheels during coast.
 //!
 //! On coast (throttle and brake both off, vehicle speed above a small
-//! gate), an undriven wheel obeys `v = omega * r` to within drag effects,
-//! so `r = v / omega` is a clean estimate. Forza's `DrivetrainType` tells
-//! us which wheels are undriven:
+//! gate), an undriven wheel obeys `v = omega * r` to within drag
+//! effects, so per frame
 //!
-//! - 0: FWD -> rear wheels are undriven; learn `radius_r`.
-//! - 1: RWD -> front wheels are undriven; learn `radius_f`.
-//! - 2: AWD -> in pure coast no axle is loaded, so we learn both axles.
+//! \[
+//! r_n = \frac{|v_n|}{\bar{\omega}_n},
+//! \qquad
+//! \bar{\omega}_n = \tfrac{1}{2}\bigl(\omega_{n,L} + \omega_{n,R}\bigr)
+//! \]
 //!
-//! We collect per-axle samples in a fixed-size ring and emit the median
-//! once we have enough.
+//! is a clean estimate of the effective rolling radius. We collect per
+//! axle samples in a fixed-size ring and emit the median once we have
+//! enough:
+//!
+//! \[
+//! \hat{r} = \mathrm{median}\bigl(\{\, r_n \mid n \in \text{coast}\,\}\bigr)
+//! \]
+//!
+//! Forza's `DrivetrainType` tells us which wheels are undriven and so
+//! which `r_hat` we can learn cleanly:
+//!
+//! - 0: FWD &rarr; rear wheels are undriven; learn `radius_r`.
+//! - 1: RWD &rarr; front wheels are undriven; learn `radius_f`.
+//! - 2: AWD &rarr; in *pure coast* no axle is loaded, so we learn both
+//!   axles. Anything outside `0..=2` is treated as AWD (most permissive
+//!   guess) so we still learn something on unknown drivetrains.
+//!
+//! See `docs/math.md#wheel-radius-auto-calibration` for the full
+//! derivation and the gate thresholds.
 
 use std::collections::VecDeque;
 

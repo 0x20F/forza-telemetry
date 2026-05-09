@@ -1,24 +1,47 @@
 //! Per-corner ride-height baseline learner.
 //!
-//! Forza's `SuspensionTravelMeters` is the absolute spring displacement,
-//! measured from some unknown rig reference. Kingpin needs the *signed*
-//! travel relative to the static ride height (positive = compression). To
-//! get there we observe the car during cruise (low |a_lat|, low |a_long|,
-//! low |yaw_rate|) and call the median of those samples the baseline. From
-//! then on, `relative = current - baseline`.
+//! Forza's `SuspensionTravelMeters` is the *absolute* spring
+//! displacement, measured from some unknown rig reference. Kingpin needs
+//! the *signed* travel relative to the static ride height (positive =
+//! compression). We collect per-corner samples while the chassis is in
+//! cruise and emit their median as the baseline:
+//!
+//! \[
+//! b_i = \mathrm{median}(S_i),
+//! \qquad
+//! r_i(t) = s_i(t) - b_i
+//! \]
+//!
+//! where `S_i` is the rolling deque of the most recent `K` cruise samples
+//! at corner `i`. Cruise gating is the conjunction:
+//!
+//! \[
+//! \mathrm{cruise} \iff
+//! |a_{\mathrm{lat}}| \le 1.0 \,\land\,
+//! |a_{\mathrm{long}}| \le 0.8 \,\land\,
+//! |\omega_y| \le 0.05
+//! \]
+//!
+//! (units: `m/s^2` and `rad/s`).
 //!
 //! Sign convention notes:
 //!
-//! - Forza's `SuspensionTravelMeters` *increases with compression*, in the
-//!   same direction as `NormalizedSuspensionTravel` (0..1, 0=stretch,
-//!   1=compression).
+//! - Forza's `SuspensionTravelMeters` *increases with compression*, in
+//!   the same direction as `NormalizedSuspensionTravel`
+//!   (`0..1`, 0=stretch, 1=compression).
 //! - Subtracting the baseline therefore yields a signed value where
 //!   positive means "currently more compressed than at rest", which is
 //!   exactly what Kingpin's signed-relative travel expects.
 //!
-//! Window size and gates are chosen to be conservative: 30 cruise samples
-//! at 60 Hz (~0.5 s of motion) is enough to produce a stable median
-//! without delaying baseline emission for very long.
+//! Why median, not mean: medians reject the occasional bump or bad
+//! sample that slips past the cruise gate without inflating the
+//! variance.
+//!
+//! Window size and gates are chosen to be conservative: `K = 30` cruise
+//! samples at 60 Hz (~0.5 s of motion) is enough to produce a stable
+//! median without delaying baseline emission for very long.
+//!
+//! See `docs/math.md#ride-height-baseline` for the full derivation.
 
 use std::collections::VecDeque;
 

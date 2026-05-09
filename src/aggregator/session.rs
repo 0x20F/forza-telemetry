@@ -1,15 +1,31 @@
-//! `AggregatorSession` ties the temporal learners together and produces an
-//! `EnrichedFrame` per ingested `RawPacket`.
+//! `AggregatorSession` ties the temporal learners together and produces
+//! an `EnrichedFrame` per ingested `RawPacket`.
 //!
 //! Phase 4 wires up:
 //!
-//! - Body slip angle (`atan2(vx, vz)` above the speed gate).
+//! - Body slip angle, `atan2(v_x, v_z)`, above the speed gate.
 //! - Lowpassed longitudinal acceleration (Z-forward axis).
 //! - Lowpassed lateral acceleration (X-right axis).
 //! - Lowpassed yaw rate (Y-axis angular velocity).
 //!
-//! Later phases will hang the ride-height learner, normal-load estimator,
-//! wheel-radius learner and steady-state classifier off the same session.
+//! The frame interval `dt` used by the EMA filters is computed from
+//! successive listener-stamped receive times (Forza's own
+//! `timestamp_ms` wraps during long sessions and is unreliable):
+//!
+//! \[
+//! \Delta t_n =
+//! \begin{cases}
+//! (t_n - t_{n-1}) / 10^{9} & \text{if } t_n > t_{n-1} \\
+//! 0 & \text{otherwise (first frame, or non-monotonic)}
+//! \end{cases}
+//! \]
+//!
+//! The `dt = 0` branch makes the first-order filter treat the very
+//! first sample as initialisation rather than a step input.
+//!
+//! Later phases hang the ride-height learner, normal-load estimator,
+//! wheel-radius learner and steady-state classifier off the same
+//! session. See `docs/math.md` for derivations of each.
 
 use crate::car_db::CarCalibration;
 use crate::csv_writer::EnrichedFrame;

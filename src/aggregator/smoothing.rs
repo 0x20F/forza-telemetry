@@ -1,10 +1,24 @@
 //! First-order exponential moving average (lowpass).
 //!
-//! The standard discrete-time first-order filter
-//! `y[n] = alpha * x[n] + (1 - alpha) * y[n-1]`
-//! with `alpha = dt / (tau + dt)`. `tau` is the time constant, in seconds.
-//! When the previous value is unknown we initialise to the current sample
-//! so the first frame is sane (no zero-spike).
+//! The standard discrete-time, time-aware first-order IIR:
+//!
+//! \[
+//! y_n = \alpha_n\, x_n + (1 - \alpha_n)\, y_{n-1},
+//! \qquad
+//! \alpha_n = \frac{\Delta t_n}{\tau + \Delta t_n}
+//! \]
+//!
+//! where `tau` is the time constant in seconds and `dt_n` is the elapsed
+//! time since the previous sample. The mixing coefficient `alpha_n` lives
+//! in `[0, 1)` for any positive `dt_n`, with the `-3 dB` cutoff at
+//! `f_c = 1 / (2 * pi * tau)` regardless of sample rate &mdash; that's why
+//! we recompute `alpha` per-frame instead of fixing it at construction.
+//!
+//! When the previous value is unknown we initialise `y_0 = x_0` so the
+//! first frame doesn't appear as a step from zero up to the actual signal
+//! value.
+//!
+//! See `docs/math.md#first-order-low-pass-ema` for the full derivation.
 
 #[derive(Debug, Clone, Copy)]
 pub struct Ema {

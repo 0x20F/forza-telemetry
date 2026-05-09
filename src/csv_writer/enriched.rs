@@ -288,6 +288,19 @@ impl EnrichedFrame {
             tire_wear_rr: wheel_lane(packet.tire_wear, |w| w.rr),
             track_id: packet.track_id,
 
+            // Cheap per-frame normalizations of Forza's wire-format
+            // bytes into the conventional analog ranges. See
+            // `docs/math.md#cheap-per-frame-normalizations` for the
+            // tilde-notation summary; in short:
+            //
+            //   ~s = s / 127  in [-1, +1]   (i8 steering)
+            //   ~a = a / 255  in [ 0,  1]   (u8 throttle)
+            //   ~b = b / 255  in [ 0,  1]   (u8 brake)
+            //   ~c = c / 255  in [ 0,  1]   (u8 clutch)
+            //   ~h = h / 255  in [ 0,  1]   (u8 handbrake)
+            //
+            // Steering uses 127 (not 128) so the output range is exactly
+            // symmetric, at the cost of one unreachable code at -128.
             steer_normalized: packet.steer.map(|s| (s as f32) / 127.0),
             accel_normalized: packet.accel.map(|v| (v as f32) / 255.0),
             brake_normalized: packet.brake.map(|v| (v as f32) / 255.0),

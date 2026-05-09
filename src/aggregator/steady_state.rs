@@ -1,13 +1,38 @@
 //! Coarse chassis state classifier.
 //!
 //! Emits a u32 bitmask of "what is the car doing right now" plus
-//! `time_in_state_ms`, the wall-clock duration the bitmask has been stable.
-//! Useful for downstream filters that only want to look at, say, settled
-//! straight-line frames.
+//! `time_in_state_ms`, the wall-clock duration the bitmask has been
+//! stable. Useful for downstream filters that only want to look at,
+//! say, settled straight-line frames.
 //!
-//! Flags are independent and may co-occur (e.g. `BRAKING | CORNERING` on
-//! a trailing-brake corner entry). `STEADY` is set only when none of the
-//! transient flags fire.
+//! Flag predicates (with `~a` and `~b` the normalized accel and brake
+//! pedals in `[0, 1]`):
+//!
+//! | Bit | Flag           | Predicate |
+//! | --- | -------------- | --- |
+//! | 0   | `COASTING`     | `~a < 0.05` and `~b < 0.05` |
+//! | 1   | `ACCELERATING` | `~a > 0.05` |
+//! | 2   | `BRAKING`      | `~b > 0.05` |
+//! | 3   | `CORNERING`    | `|a_lat| > 1.0` or `|omega_y| > 0.05` |
+//! | 4   | `STEADY`       | `|a_lat| < 0.5` and `|a_long| < 0.5` and `|omega_y| < 0.03` |
+//!
+//! Time in state is computed by tracking the receive time when the
+//! bitmask last changed:
+//!
+//! \[
+//! T_n = \left\lfloor (t_n - t_{\mathrm{state\_started}}) / 10^{6} \right\rfloor
+//! \quad\text{(milliseconds)}
+//! \]
+//!
+//! where `t_state_started` is reset to `t_n` whenever the current
+//! bitmask differs from the previous one.
+//!
+//! Flags are independent and may co-occur (e.g. `BRAKING | CORNERING`
+//! on a trailing-brake corner entry). `STEADY` is set only when none of
+//! the transient flags fire.
+//!
+//! See `docs/math.md#steady-state-classifier` for the full predicate
+//! table and rationale.
 
 use crate::decoder::RawPacket;
 

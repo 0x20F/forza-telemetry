@@ -1,7 +1,13 @@
-//! Unit conversions applied at decode time so the rest of the pipeline never
-//! sees Forza's mixed unit system.
+//! Unit conversions applied at decode time so the rest of the pipeline
+//! never sees Forza's mixed unit system.
 
 /// Convert Fahrenheit to Celsius. Forza emits tire temperatures in F.
+///
+/// \[
+/// T_{\mathrm{C}} = (T_{\mathrm{F}} - 32) \cdot \tfrac{5}{9}
+/// \]
+///
+/// See `docs/math.md#fahrenheit-rarr-celsius`.
 #[inline]
 pub fn f_to_c(f: f32) -> f32 {
     (f - 32.0) * (5.0 / 9.0)

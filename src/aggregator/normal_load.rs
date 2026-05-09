@@ -1,31 +1,59 @@
 //! Per-corner normal-load reconstruction.
 //!
-//! Forza does not publish per-tire normal force, so we reconstruct it from
-//! the static weight distribution plus longitudinal and lateral load
-//! transfer. This is a textbook two-track / quasi-static model:
+//! Forza does not publish per-tire normal force, so we reconstruct it
+//! from a textbook quasi-static two-track model: static weight
+//! distribution plus longitudinal and lateral load transfer.
 //!
-//! ```text
-//! delta_long      = m * a_long * cog_height / wheelbase
-//! delta_lat_axle  = m_axle * a_lat * cog_height / track_axle
+//! Static axle masses from front weight bias `phi`:
 //!
-//! F_front = m_front * g - delta_long
-//! F_rear  = m_rear  * g + delta_long
-//! F_fl    = F_front/2 + delta_lat_f/2
-//! F_fr    = F_front/2 - delta_lat_f/2
-//! F_rl    = F_rear /2 + delta_lat_r/2
-//! F_rr    = F_rear /2 - delta_lat_r/2
-//! ```
+//! \[
+//! m_{\mathrm{front}} = \phi\, m, \qquad
+//! m_{\mathrm{rear}}  = (1 - \phi)\, m
+//! \]
+//!
+//! Longitudinal (front&harr;rear) and per-axle lateral (left&harr;right)
+//! transfers:
+//!
+//! \[
+//! \Delta_{\mathrm{long}} = \frac{m\, a_{\mathrm{long}}\, h}{L},
+//! \qquad
+//! \Delta_{\mathrm{lat,F}} = \frac{m_{\mathrm{front}}\, a_{\mathrm{lat}}\, h}{t_F},
+//! \qquad
+//! \Delta_{\mathrm{lat,R}} = \frac{m_{\mathrm{rear}}\,  a_{\mathrm{lat}}\, h}{t_R}
+//! \]
+//!
+//! Per-axle vertical loads, then per-corner:
+//!
+//! \[
+//! F_{\mathrm{front}} = m_{\mathrm{front}}\, g - \Delta_{\mathrm{long}},
+//! \qquad
+//! F_{\mathrm{rear}}  = m_{\mathrm{rear}}\,  g + \Delta_{\mathrm{long}}
+//! \]
+//!
+//! \[
+//! \begin{aligned}
+//! F_{\mathrm{FL}} &= \tfrac{1}{2} F_{\mathrm{front}} + \tfrac{1}{2} \Delta_{\mathrm{lat,F}} &
+//! F_{\mathrm{FR}} &= \tfrac{1}{2} F_{\mathrm{front}} - \tfrac{1}{2} \Delta_{\mathrm{lat,F}} \\
+//! F_{\mathrm{RL}} &= \tfrac{1}{2} F_{\mathrm{rear}}  + \tfrac{1}{2} \Delta_{\mathrm{lat,R}} &
+//! F_{\mathrm{RR}} &= \tfrac{1}{2} F_{\mathrm{rear}}  - \tfrac{1}{2} \Delta_{\mathrm{lat,R}}
+//! \end{aligned}
+//! \]
+//!
+//! By construction `F_FL + F_FR + F_RL + F_RR = m * g`.
 //!
 //! The model assumes Forza's car-local frame (X right, Y up, Z forward).
 //! A positive `a_lat` is body-frame centripetal acceleration to the right
 //! (i.e. a right-hand turn); the body's inertia tilts it left, so load
 //! shifts to the LEFT-side wheels (the outside of the turn). A positive
-//! `a_long` (forward acceleration) shifts load rearward. Sums are exactly
-//! `m * g` by construction.
+//! `a_long` (forward acceleration) shifts load rearward.
 //!
 //! Returns `None` when any of `mass`, `cog_height`, `wheelbase`,
 //! `front_weight_bias`, `track_f`, `track_r` is missing from the
-//! calibration; partial reconstruction would be confusing in the CSV.
+//! calibration; partial reconstruction would silently bias the outputs
+//! and confuse downstream consumers, so empty CSV cells are preferred.
+//!
+//! See `docs/math.md#per-corner-normal-load` for the full derivation,
+//! variable table, and sign-convention discussion.
 
 use crate::car_db::CarCalibration;
 use crate::decoder::Wheel;

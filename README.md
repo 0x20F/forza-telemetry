@@ -66,6 +66,14 @@ match packet.source {
 See `src/decoder` for the wire formats, `src/csv_writer` for the v2 schema,
 and `src/stream/udp_server.rs` for the listener loop.
 
+## Math
+
+Every derivation the aggregator runs (low-pass filter, body slip angle,
+ride-height baseline, per-corner normal load, wheel-radius auto-cal,
+steady-state classifier) is written out with LaTeX, units, and sign
+conventions in [`docs/math.md`](docs/math.md). If you change a formula
+in code, update the doc to match.
+
 ## Tests
 
 ```bash
